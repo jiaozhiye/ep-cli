@@ -108,7 +108,7 @@ module.exports = function(webpackEnv) {
       loaders.push({
         loader: require.resolve('style-resources-loader'),
         options: {
-          patterns: [path.resolve(__dirname, '../src/assets/css/mixins/*.less')],
+          patterns: [path.resolve(__dirname, '../src/assets/variables.less')],
           injector: 'append'
         }
       });
@@ -434,7 +434,7 @@ module.exports = function(webpackEnv) {
               exclude: lessModuleRegex,
               use: getStyleLoaders(
                 {
-                  importLoaders: 2,
+                  importLoaders: 3,
                   sourceMap: isEnvProduction && shouldUseSourceMap
                 },
                 'less-loader'
@@ -445,7 +445,7 @@ module.exports = function(webpackEnv) {
               test: lessModuleRegex,
               use: getStyleLoaders(
                 {
-                  importLoaders: 2,
+                  importLoaders: 3,
                   sourceMap: isEnvProduction && shouldUseSourceMap,
                   modules: true,
                   getLocalIdent: getCSSModuleLocalIdent

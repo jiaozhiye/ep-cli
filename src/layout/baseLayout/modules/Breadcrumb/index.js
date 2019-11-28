@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-24 11:05:38
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-24 11:22:37
+ * @Last Modified time: 2019-11-28 18:57:50
  */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
@@ -12,14 +12,14 @@ import classnames from 'classnames';
 import css from './index.module.less';
 
 @withRouter
-class Breadcrumb extends Component {
+class BreadCrumb extends Component {
   state = {
     result: []
   };
 
   componentDidMount() {
     const { pathname: path } = this.props.location;
-    console.log(matchRoutes(routes, path));
+    // console.log(matchRoutes(routes, path));
   }
 
   render() {
@@ -27,4 +27,4 @@ class Breadcrumb extends Component {
   }
 }
 
-export default Breadcrumb;
+export default BreadCrumb;

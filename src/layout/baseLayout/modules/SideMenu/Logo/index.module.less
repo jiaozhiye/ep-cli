@@ -1,0 +1,54 @@
+/*
+ * @Author: 焦质晔
+ * @Date: 2019-11-28 16:06:17
+ * @Last Modified by: 焦质晔
+ * @Last Modified time: 2019-11-28 17:46:54
+ */
+.logo {
+  height: 60px;
+  background-color: #1c2327;
+  overflow: hidden;
+  &-link {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    &-img {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+  .imgZK {
+    width: 140px;
+    margin-left: 24px;
+    animation: show 0.3s ease both;
+  }
+  .imgSQ {
+    width: 140px;
+    margin-left: 12px;
+    animation: hide 0.3s ease both;
+  }
+  .none {
+    animation: none;
+  }
+}
+
+@keyframes show {
+  0% {
+    opacity: 0;
+    width: 60px;
+  }
+  100% {
+    opacity: 1;
+    width: 140px;
+  }
+}
+@keyframes hide {
+  0% {
+    opacity: 0;
+    width: 80px;
+  }
+  100% {
+    opacity: 1;
+    width: 54px;
+  }
+}
