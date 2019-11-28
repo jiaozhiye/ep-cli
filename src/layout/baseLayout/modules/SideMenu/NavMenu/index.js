@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 20:11:21
+ * @Last Modified time: 2019-11-29 00:14:51
  */
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -13,6 +13,7 @@ import actionCreators from '@/store/actions';
 
 import classnames from 'classnames';
 import css from './index.module.less';
+import variables from '@/assets/css/variables.less';
 
 import { Menu, Icon } from 'antd';
 const SubMenu = Menu.SubMenu;
@@ -64,8 +65,9 @@ class NavMenu extends Component {
   render() {
     const { openKeys, selectedKeys } = this.state;
     const { menuList } = this.props;
+    const { sideBgColor } = variables;
     return (
-      <Menu theme="dark" mode="inline" defaultOpenKeys={openKeys} selectedKeys={selectedKeys}>
+      <Menu theme="dark" mode="inline" defaultOpenKeys={openKeys} selectedKeys={selectedKeys} style={{ backgroundColor: sideBgColor }}>
         {this.createMenuTree(menuList)}
       </Menu>
     );

@@ -1,5 +1,3 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
@@ -101,6 +99,11 @@ module.exports = function(webpackEnv) {
       loaders.push({
         loader: require.resolve(preProcessor),
         options: {
+          // 自定义 -> antd 自定义主题
+          modifyVars: {
+            'primary-color': '#1890ff'
+          },
+          javascriptEnabled: true,
           sourceMap: isEnvProduction && shouldUseSourceMap
         }
       });
@@ -108,7 +111,7 @@ module.exports = function(webpackEnv) {
       loaders.push({
         loader: require.resolve('style-resources-loader'),
         options: {
-          patterns: [path.resolve(__dirname, '../src/assets/variables.less')],
+          patterns: [path.resolve(__dirname, '../src/assets/css/variables.less')],
           injector: 'append'
         }
       });

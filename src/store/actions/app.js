@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 15:17:14
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 20:12:26
+ * @Last Modified time: 2019-11-28 22:33:41
  */
 import { ASIDE_COLLAPSED, MENU_LIST } from '../types';
 import { getMenuList } from '@/api/app';
@@ -21,8 +21,7 @@ export const createMenuList = () => async (dispatch, getState) => {
   if (menuList.length) return;
 
   let data = [];
-  // process.env.MOCK_DATA === 'true'
-  if (1) {
+  if (process.env.REACT_APP_MOCK_DATA === 'true') {
     data = require('@/mock/sideMenu').default;
   } else {
     const res = await getMenuList();

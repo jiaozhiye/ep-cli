@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 17:57:46
+ * @Last Modified time: 2019-11-29 00:09:29
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -27,7 +27,7 @@ class SideMenu extends Component {
   render() {
     const { collapsed } = this.props;
     return (
-      <Sider collapsible collapsed={collapsed} trigger={null}>
+      <Sider className={classnames(css['sidebar'])} collapsible collapsed={collapsed} trigger={null}>
         <Logo />
         <NavMenu />
       </Sider>
