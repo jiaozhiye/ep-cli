@@ -2,10 +2,11 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 14:18:27
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 15:34:43
+ * @Last Modified time: 2019-11-29 13:21:33
  */
 import React, { Component } from 'react';
 import { renderRoutes } from '@/routes/routeConfig';
+import config from '@/config';
 import classnames from 'classnames';
 import css from './index.module.less';
 
@@ -23,8 +24,8 @@ class BaseLayout extends Component {
         <Layout>
           <TopHeader />
           <Layout.Content>
-            <BreadCrumb />
-            <main>{renderRoutes(route.routes)}</main>
+            {config.isBreadcrumb && <BreadCrumb />}
+            <main className={classnames(css.main)}>{renderRoutes(route.routes)}</main>
           </Layout.Content>
         </Layout>
       </Layout>

@@ -2,9 +2,10 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 15:19:25
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 20:12:03
+ * @Last Modified time: 2019-11-29 08:23:02
  */
 import { ASIDE_COLLAPSED, MENU_LIST } from '../types';
+import { deepMapRoutes, flatMapRoutes } from '@/routes/routeConfig';
 import routes from '@/routes';
 
 /**
@@ -15,45 +16,15 @@ const initState = {
   menuList: [] // 菜单数据
 };
 
-// 数组的递归查找
-const deepFind = (arr, mark) => {
-  let res = null;
-  for (let i = 0; i < arr.length; i++) {
-    if (Array.isArray(arr[i].routes)) {
-      res = deepFind(arr[i].routes, mark);
-    }
-    if (res !== null) {
-      return res;
-    }
-    if (arr[i].path === mark) {
-      res = arr[i];
-    }
-  }
-  return res;
-};
-
 // 给导航数据添加图标属性
 const createNavIcon = list => {
   list.forEach(x => {
     if (Array.isArray(x.children)) {
       createNavIcon(x.children);
     }
-    const { meta } = deepFind(routes, x.path) || {};
+    const { meta } = deepMapRoutes(routes, x.path) || {};
     x.icon = meta ? meta.icon : undefined;
   });
-};
-
-// 提取可点击的菜单项
-const formateMenu = list => {
-  const res = [];
-  list.forEach(x => {
-    if (Array.isArray(x.children)) {
-      res.push(...formateMenu(x.children));
-    } else {
-      res.push(x);
-    }
-  });
-  return res;
 };
 
 // 设置侧栏导航的 展开/收起 状态

@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 15:17:14
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 22:33:41
+ * @Last Modified time: 2019-11-29 08:27:47
  */
 import { ASIDE_COLLAPSED, MENU_LIST } from '../types';
 import { getMenuList } from '@/api/app';
@@ -15,10 +15,8 @@ export const createAsideCollapsed = params => ({
 
 // 设置导航菜单
 export const createMenuList = () => async (dispatch, getState) => {
-  const {
-    app: { menuList }
-  } = getState();
-  if (menuList.length) return;
+  const { app } = getState();
+  if (app.menuList.length) return;
 
   let data = [];
   if (process.env.REACT_APP_MOCK_DATA === 'true') {

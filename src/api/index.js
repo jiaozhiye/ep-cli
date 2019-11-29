@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 18:29:35
+ * @Last Modified time: 2019-11-29 08:49:02
  */
 import axios from 'axios';
 import qs from 'qs';
@@ -30,7 +30,7 @@ const codeMessage = {
 
 const getConfigHeaders = () => {
   return {
-    'x-access-token': ''
+    'Admin-Token': ''
   };
 };
 
