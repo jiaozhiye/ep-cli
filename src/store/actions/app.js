@@ -2,9 +2,9 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 15:17:14
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-29 08:27:47
+ * @Last Modified time: 2019-11-30 09:05:23
  */
-import { ASIDE_COLLAPSED, MENU_LIST } from '../types';
+import { ASIDE_COLLAPSED, MENU_LIST, TOP_TAB_MENU } from '../types';
 import { getMenuList } from '@/api/app';
 
 // 设置侧栏导航的 展开/收起 状态
@@ -35,3 +35,9 @@ export const createMenuList = () => async (dispatch, getState) => {
     payload: data
   });
 };
+
+// 设置顶部选项卡菜单
+export const createTopTabMenus = params => ({
+  type: TOP_TAB_MENU,
+  payload: params
+});

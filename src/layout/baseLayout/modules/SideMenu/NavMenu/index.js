@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-29 12:19:14
+ * @Last Modified time: 2019-11-30 13:06:05
  */
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -33,11 +33,11 @@ class NavMenu extends Component {
     openKeys: []
   };
 
-  componentWillMount() {
-    const { pathname: path } = this.props.location;
+  static getDerivedStateFromProps(nextProps, state) {
+    const { pathname: path } = nextProps.location;
     if (!path) return;
     const stepRoutes = matchRoutes(routes, path);
-    this.setState({ selectedKeys: [path], openKeys: stepRoutes.map(x => x.match.path) });
+    return { selectedKeys: [path], openKeys: stepRoutes.map(x => x.match.path) };
   }
 
   componentDidMount() {
@@ -77,7 +77,7 @@ class NavMenu extends Component {
     const { menuList } = this.props;
     const { sideBgColor } = variables;
     return (
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={selectedKeys} defaultOpenKeys={openKeys} style={{ backgroundColor: sideBgColor }}>
+      <Menu theme="dark" mode="inline" selectedKeys={selectedKeys} defaultOpenKeys={openKeys} style={{ backgroundColor: sideBgColor }}>
         {this.createMenuTree(menuList)}
       </Menu>
     );

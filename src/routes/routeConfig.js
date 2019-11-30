@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 21:07:45
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-29 13:07:38
+ * @Last Modified time: 2019-11-30 10:49:06
  */
 import React from 'react';
 import { matchPath, Router, Switch, Route, Redirect } from 'react-router-dom';
@@ -50,8 +50,8 @@ export const matchRoutes = (routes, pathname, branch = []) => {
   return branch;
 };
 
-export const processRoutes = rs => {
-  return rs.map(x => {
+export const processRoutes = routes => {
+  return routes.map(x => {
     if (Array.isArray(x.routes)) {
       // 处理 404
       x.routes.push({ path: '*', meta: { title: '404' }, component: Nomatch });
@@ -64,17 +64,17 @@ export const processRoutes = rs => {
   });
 };
 
-export const deepMapRoutes = (rs, mark) => {
+export const deepMapRoutes = (routes, mark) => {
   let res = null;
-  for (let i = 0; i < rs.length; i++) {
-    if (Array.isArray(rs[i].routes)) {
-      res = deepMapRoutes(rs[i].routes, mark);
+  for (let i = 0; i < routes.length; i++) {
+    if (Array.isArray(routes[i].routes)) {
+      res = deepMapRoutes(routes[i].routes, mark);
     }
     if (res !== null) {
       return res;
     }
-    if (rs[i].path === mark) {
-      res = rs[i];
+    if (routes[i].path === mark) {
+      res = routes[i];
     }
   }
   return res;
