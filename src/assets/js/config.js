@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019/6/20
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 18:28:50
+ * @Last Modified time: 2019-12-01 10:06:37
  */
 const createProductEnv = env => {
   const result = { env, envText: `当前工程环境：${env}`, serverUrl: '/' };

@@ -1,23 +1,33 @@
 /*
  * @Author: 焦质晔
- * @Date: 2019-11-29 07:41:23
+ * @Date: 2019-12-01 09:39:10
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-29 13:15:07
+ * @Last Modified time: 2019-12-01 09:41:51
  */
-import Cookies from 'js-cookie';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-const TokenKey = 'Admin-Token';
+// 高阶组件：是一个函数，能够接收一个组件，并返回一个新的组件，
+// 通过高阶组件，可以把通用的逻辑数据或方法注入到被其装饰的基础组件中
+// 用途：重用组件逻辑，对参数组件进行包装和扩展，注入一些特定的功能
 
-// token 操作
-export const getToken = () => Cookies.get(TokenKey);
+const AuthHOC = options => {
+  // 处理 options 参数
+  // ...
+  return WrappedComponent => {
+    return class HOC extends Component {
+      // displayName -> 定义调试时的组件 name
+      static displayName = `HOC(${WrappedComponent.displayName || WrappedComponent.name})`;
 
-export const setToken = token => Cookies.set(TokenKey, token);
+      static propTypes = {};
 
-export const removeToken = () => Cookies.remove(TokenKey);
+      static defaultProps = {};
 
-// 登录用户操作
-export const getUser = () => Cookies.get('username');
+      render() {
+        return <WrappedComponent {...this.props} />
+      }
+    };
+  }
+}
 
-export const setUser = name => Cookies.set('username', name);
-
-export const removeUser = () => Cookies.remove('username');
+export default AuthHOC;

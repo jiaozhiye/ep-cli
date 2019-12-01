@@ -2,11 +2,13 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-29 08:49:02
+ * @Last Modified time: 2019-12-01 10:03:58
  */
 import axios from 'axios';
 import qs from 'qs';
+import { getToken, removeToken } from '@/utils/cookie';
 import config from '@/assets/js/config';
+import { message, notification  } from 'antd';
 
 console.info(config.envText);
 
@@ -30,7 +32,7 @@ const codeMessage = {
 
 const getConfigHeaders = () => {
   return {
-    'Admin-Token': ''
+    'Admin-Token': getToken()
   };
 };
 
@@ -48,7 +50,10 @@ const instance = axios.create({
 const errorHandler = error => {
   const { response = {} } = error;
   const errortext = codeMessage[response.status] || response.statusText;
-  // notifyAction(errortext, 'error', `请求错误 ${response.status}`);
+  notification.error({
+    message: `请求错误 ${response.status}`,
+    description: errortext
+  });
   return Promise.reject(error);
 };
 
@@ -63,9 +68,13 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(({ data }) => {
   // 错误数据提示
   if (data.resultCode !== 200) {
-    // notifyAction(data.errMsg, 'error');
+    message.error(data.errMsg);
   }
   // token 过期，需要重新登录
+  if (data.resultCode === 4015) {
+    removeToken();
+    window.history.pushState({}, '', '/login');
+  }
   return data;
 }, errorHandler);
 
