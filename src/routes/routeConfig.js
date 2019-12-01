@@ -2,12 +2,25 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 21:07:45
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-30 10:49:06
+ * @Last Modified time: 2019-12-01 13:51:51
  */
 import React from 'react';
 import { matchPath, Router, Switch, Route, Redirect } from 'react-router-dom';
 import { AsyncLoadable } from '@/components';
+import { getToken } from '@/utils/cookie';
 import Nomatch from '@/pages/nomatch';
+
+// 访问白名单
+const whiteList = ['/login'];
+
+// 登录判断
+const isLogin = () => {
+  if (process.env.REACT_APP_MOCK_DATA === 'true') {
+    return true;
+  } else {
+    return Boolean(getToken());
+  }
+};
 
 export const renderRoutes = (routes, extraProps = {}, switchProps = {}) => {
   return Array.isArray(routes) ? (
@@ -19,8 +32,18 @@ export const renderRoutes = (routes, extraProps = {}, switchProps = {}) => {
           exact={route.exact}
           strict={route.strict}
           render={props => {
-            const { pathname: path } = props.location;
+            const { location } = props;
+            const { pathname: path } = location;
+            // 未登录
+            if (!isLogin() && !whiteList.includes(path)) {
+              return <Redirect to={{ pathname: '/login', state: { from: location } }} />;
+            }
+            // 已登录 并且 url 是 /login，重定向到首页
+            if (isLogin() && path === '/login') {
+              return <Redirect to="/" />;
+            }
             const { redirect } = deepMapRoutes(routes, path) || {};
+            // 执行路由重定向
             if (redirect) {
               return <Redirect from={path} to={redirect} />;
             }

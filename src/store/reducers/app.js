@@ -2,9 +2,9 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 15:19:25
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-30 09:08:02
+ * @Last Modified time: 2019-12-01 11:30:25
  */
-import { ASIDE_COLLAPSED, MENU_LIST, TOP_TAB_MENU } from '../types';
+import { ASIDE_COLLAPSED, MENU_LIST, TOP_TAB_MENU, DICT_DATA } from '../types';
 import { deepMapRoutes, flatMapRoutes } from '@/routes/routeConfig';
 import routes from '@/routes';
 
@@ -14,7 +14,8 @@ import routes from '@/routes';
 const initState = {
   collapsed: false, // 侧栏展开/收起状态
   menuList: [], // 侧栏菜单数据
-  tabMenus: [] // 顶部选项卡菜单数据
+  tabMenus: [], // 顶部选项卡菜单数据
+  dict: {} // 数据字典
 };
 
 // 给导航数据添加图标属性
@@ -51,6 +52,13 @@ const setTopTabMenus = (state, payload) => {
   });
 };
 
+// 设置数据字典
+const setDictData = (state, payload) => {
+  return Object.assign({}, state, {
+    dict: payload
+  });
+};
+
 // 必须要给 state 参数默认赋值 initState
 export const appReducer = (state = initState, action) => {
   switch (action.type) {
@@ -60,6 +68,8 @@ export const appReducer = (state = initState, action) => {
       return setMenuList(state, action.payload);
     case TOP_TAB_MENU:
       return setTopTabMenus(state, action.payload);
+    case DICT_DATA:
+      return setDictData(state, action.payload);
     default:
       return state;
   }

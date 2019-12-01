@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 15:28:58
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-28 22:08:50
+ * @Last Modified time: 2019-12-01 14:05:23
  */
 import React, { Component } from 'react';
 import { Spin } from 'antd';
@@ -25,7 +25,7 @@ const AsyncLoadable = importComponent => {
         <C {...this.props} />
       ) : (
         <div className={css.spin}>
-          <Spin />
+          <Spin size="large" />
         </div>
       );
     }

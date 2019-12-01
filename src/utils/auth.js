@@ -2,32 +2,60 @@
  * @Author: 焦质晔
  * @Date: 2019-12-01 09:39:10
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-01 09:41:51
+ * @Last Modified time: 2019-12-01 13:24:50
  */
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 
-// 高阶组件：是一个函数，能够接收一个组件，并返回一个新的组件，
-// 通过高阶组件，可以把通用的逻辑数据或方法注入到被其装饰的基础组件中
-// 用途：重用组件逻辑，对参数组件进行包装和扩展，注入一些特定的功能
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import actionCreators from '@/store/actions';
 
-const AuthHOC = options => {
-  // 处理 options 参数
-  // ...
-  return WrappedComponent => {
-    return class HOC extends Component {
-      // displayName -> 定义调试时的组件 name
-      static displayName = `HOC(${WrappedComponent.displayName || WrappedComponent.name})`;
+export default WrappedComponent => {
+  @withRouter
+  @connect(
+    state => ({ menuList: state.app.menuList }),
+    dispatch => ({})
+  )
+  class Auth extends Component {
+    // displayName -> 定义调试时的组件 name
+    static displayName = `HOC(${WrappedComponent.displayName || WrappedComponent.name})`;
 
-      static propTypes = {};
-
-      static defaultProps = {};
-
-      render() {
-        return <WrappedComponent {...this.props} />
-      }
+    state = {
+      auths: []
     };
-  }
-}
 
-export default AuthHOC;
+    componentDidMount() {
+      const { menuList, location } = this.props;
+      const { pathname: path } = location;
+      const target = this.deepMapMenu(menuList, path);
+      if (!target) return;
+      if (Array.isArray(target.permission) && target.permission.length) {
+        this.setState({ auths: target.permission });
+      }
+    }
+
+    deepMapMenu = (menus, mark) => {
+      let res = null;
+      for (let i = 0; i < menus.length; i++) {
+        if (Array.isArray(menus[i].children)) {
+          res = this.deepMapMenu(menus[i].children, mark);
+        }
+        if (res !== null) {
+          return res;
+        }
+        if (menus[i].path === mark) {
+          res = menus[i];
+        }
+      }
+      return res;
+    }
+
+    render() {
+      const { auths } = this.state;
+      return <WrappedComponent {...this.props} auths={auths} />
+    }
+  };
+  return Auth;
+};
+
