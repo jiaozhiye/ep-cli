@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 14:18:27
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-29 13:21:33
+ * @Last Modified time: 2019-12-02 12:34:56
  */
 import React, { Component } from 'react';
 import { renderRoutes } from '@/routes/routeConfig';
@@ -23,7 +23,7 @@ class BaseLayout extends Component {
         <SideMenu />
         <Layout>
           <TopHeader />
-          <Layout.Content>
+          <Layout.Content style={{ overflowY: 'auto' }}>
             {config.isBreadcrumb && <BreadCrumb />}
             <main className={classnames(css.main)}>{renderRoutes(route.routes)}</main>
           </Layout.Content>

@@ -2,9 +2,30 @@
  * @Author: 焦质晔
  * @Date: 2019-11-30 08:18:06
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-30 08:26:37
+ * @Last Modified time: 2019-12-02 08:53:08
  */
 .multitab {
   height: 40px;
   margin: 20px 200px 0 60px;
+  /* :global 后的类选择器，是全局生效的，不会被 css-modules 编译，定义什么就是什么 */
+  :global .ant-tabs {
+    overflow: hidden;
+    .ant-tabs-bar {
+      margin: 0;
+      border-color: @borderColor;
+      .ant-tabs-tab {
+        margin-right: -1px;
+        border-radius: 0;
+        background-color: #fff;
+        border-color: @borderColor;
+        &.ant-tabs-tab-active {
+          background-color: #fff;
+          border-bottom-color: #fff;
+        }
+      }
+    }
+    .ant-tabs-content {
+      display: none;
+    }
+  }
 }
