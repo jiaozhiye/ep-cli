@@ -1,0 +1,18 @@
+/*
+ * @Author: 焦质晔
+ * @Date: 2019-12-03 08:40:19
+ * @Last Modified by: 焦质晔
+ * @Last Modified time: 2019-12-03 08:57:57
+ */
+.nav-menu {
+  height: calc(100vh - 60px);
+  overflow-x: hidden;
+  :global .ant-menu {
+    height: 100%;
+    overflow-y: auto;
+    /* 隐藏滚动条 */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}

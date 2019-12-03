@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-01 11:42:36
+ * @Last Modified time: 2019-12-03 08:39:32
  */
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -77,9 +77,11 @@ class NavMenu extends Component {
     const { menuList } = this.props;
     const { sideBgColor } = variables;
     return (
-      <Menu theme="dark" mode="inline" selectedKeys={selectedKeys} defaultOpenKeys={openKeys} style={{ backgroundColor: sideBgColor }}>
-        {this.createMenuTree(menuList)}
-      </Menu>
+      <div className={classnames(css['nav-menu'])}>
+        <Menu theme="dark" mode="inline" selectedKeys={selectedKeys} defaultOpenKeys={openKeys} style={{ backgroundColor: sideBgColor }}>
+          {this.createMenuTree(menuList)}
+        </Menu>
+      </div>
     );
   }
 }
