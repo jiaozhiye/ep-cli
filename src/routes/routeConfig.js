@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 21:07:45
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-01 13:51:51
+ * @Last Modified time: 2019-12-05 08:51:18
  */
 import React from 'react';
 import { matchPath, Router, Switch, Route, Redirect } from 'react-router-dom';
@@ -103,11 +103,11 @@ export const deepMapRoutes = (routes, mark) => {
   return res;
 };
 
-export const flatMapRoutes = menus => {
+export const flatMapMenus = menus => {
   const res = [];
   menus.forEach(x => {
     if (Array.isArray(x.children)) {
-      res.push(...flatMapRoutes(x.children));
+      res.push(...flatMapMenus(x.children));
     } else {
       res.push(x);
     }

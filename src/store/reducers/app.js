@@ -2,10 +2,10 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 15:19:25
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-01 11:30:25
+ * @Last Modified time: 2019-12-05 08:48:08
  */
 import { ASIDE_COLLAPSED, MENU_LIST, TOP_TAB_MENU, DICT_DATA } from '../types';
-import { deepMapRoutes, flatMapRoutes } from '@/routes/routeConfig';
+import { deepMapRoutes, flatMapMenus } from '@/routes/routeConfig';
 import routes from '@/routes';
 
 /**
