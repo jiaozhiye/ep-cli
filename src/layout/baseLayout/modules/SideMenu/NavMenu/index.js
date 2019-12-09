@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-05 08:47:06
+ * @Last Modified time: 2019-12-09 08:56:06
  */
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -22,8 +22,8 @@ const SubMenu = Menu.SubMenu;
 
 const getOpenKeys = props => {
   const { pathname: path } = props.location;
-  const stepRoutes = matchRoutes(routes, path);
-  return stepRoutes.map(x => x.match.path).slice(1);
+  const stepMatchs = matchRoutes(routes, path).map(x => x.match);
+  return stepMatchs.map(x => x.path).slice(1);
 };
 
 @withRouter
