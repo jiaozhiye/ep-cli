@@ -5,7 +5,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.0",
     "add-dom-event-listener": "^1.1.0",
-    "antd": "^3.26.0",
+    "antd": "^3.25.2",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "core-js": "^3.4.2",
@@ -16,6 +16,7 @@
     "nprogress": "^0.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
+    "react-contextmenu": "^2.13.0",
     "react-dom": "^16.8.4",
     "react-hot-loader": "^4.8.0",
     "react-redux": "^6.0.1",

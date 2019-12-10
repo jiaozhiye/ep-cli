@@ -2,10 +2,11 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-30 13:14:15
+ * @Last Modified time: 2019-12-10 09:23:57
  */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import routes from '@/routes';
 import { deepMapRoutes } from '@/routes/routeConfig';
 import _ from 'lodash';
@@ -19,6 +20,8 @@ import css from './index.module.less';
 
 import { Tabs } from 'antd';
 const { TabPane } = Tabs;
+
+const MENU_TYPE = 'SIMPLE';
 
 @withRouter
 @connect(
@@ -83,16 +86,42 @@ class MultiTabNav extends Component {
     this.setState({ activeKey });
   };
 
+  refreshTagHandle = () => {};
+
+  closeTagHandle = type => {};
+
   render() {
     const { tabMenus } = this.props;
     const { activeKey } = this.state;
     return (
       <div className={classnames(css.multitab)}>
-        <Tabs hideAdd onChange={this.onChange} activeKey={activeKey} type="editable-card" onEdit={this.onEdit}>
+        <Tabs type="editable-card" activeKey={activeKey} hideAdd onChange={this.onChange} onEdit={this.onEdit}>
           {tabMenus.map(pane => (
-            <TabPane tab={pane.title} key={pane.path} closable={tabMenus.length > 1} />
+            <TabPane
+              key={pane.path}
+              tab={
+                <ContextMenuTrigger id={MENU_TYPE} renderTag="span" attributes={{ style: { marginLeft: '-16px', padding: '10px 0 10px 16px' } }}>
+                  {pane.title}
+                </ContextMenuTrigger>
+              }
+              closable={tabMenus.length > 1}
+            />
           ))}
         </Tabs>
+        <ContextMenu id={MENU_TYPE} className="ant-dropdown-menu">
+          <MenuItem className="ant-dropdown-menu-item" onClick={this.refreshTagHandle}>
+            刷新当前
+          </MenuItem>
+          <MenuItem className="ant-dropdown-menu-item" onClick={() => this.closeTagHandle('right')}>
+            关闭右侧
+          </MenuItem>
+          <MenuItem className="ant-dropdown-menu-item" onClick={() => this.closeTagHandle('left')}>
+            关闭左侧
+          </MenuItem>
+          <MenuItem className="ant-dropdown-menu-item" onClick={() => this.closeTagHandle('other')}>
+            关闭其他
+          </MenuItem>
+        </ContextMenu>
       </div>
     );
   }
