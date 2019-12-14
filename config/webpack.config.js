@@ -328,7 +328,6 @@ module.exports = function(webpackEnv) {
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve('babel-preset-react-app/webpack-overrides'),
-
                 plugins: [
                   [
                     require.resolve('babel-plugin-named-asset-import'),
