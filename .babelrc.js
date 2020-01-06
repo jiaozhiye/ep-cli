@@ -3,9 +3,9 @@ module.exports = {
     [
       '@babel/preset-env',
       {
-        useBuiltIns: 'entry',
+        modules: false,
         corejs: 3,
-        modules: false
+        useBuiltIns: 'usage'
       }
     ],
     'react-app'

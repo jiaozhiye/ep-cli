@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-09 08:56:06
+ * @Last Modified time: 2019-12-26 07:55:33
  */
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -88,7 +88,7 @@ class NavMenu extends Component {
     return <Menu.Item key={item.path}>{this.getMenuItemPath(item)}</Menu.Item>;
   };
 
-  // 判断是否是http链接 返回 Link 或 a
+  // 判断是否是 http 链接 返回 Link 或 a
   getMenuItemPath = item => {
     const path = this.conversionPath(item.path);
     const { target } = item;
