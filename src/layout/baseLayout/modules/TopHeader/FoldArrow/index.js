@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-30 08:16:14
+ * @Last Modified time: 2020-01-07 10:07:56
  */
 import React, { Component } from 'react';
 
@@ -13,7 +13,7 @@ import actionCreators from '@/store/actions';
 import classnames from 'classnames';
 import css from './index.module.less';
 
-import { Icon } from 'antd';
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 
 @connect(
   state => ({ collapsed: state.app.collapsed }),
@@ -29,7 +29,14 @@ class FoldArrow extends Component {
 
   render() {
     const { collapsed } = this.props;
-    return <Icon className={classnames(css['trigger'], 'fl')} type={collapsed ? 'menu-unfold' : 'menu-fold'} onClick={this.clickHandle} />;
+    return (
+      <>
+        {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+          className: classnames(css['trigger'], 'fl'),
+          onClick: this.clickHandle
+        })}
+      </>
+    );
   }
 }
 

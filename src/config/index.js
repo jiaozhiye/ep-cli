@@ -2,10 +2,11 @@
  * @Author: 焦质晔
  * @Date: 2019/6/20
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-09 08:08:04
+ * @Last Modified time: 2020-01-13 13:32:51
  */
 export default {
   systemName: '奥迪EP系统',
+  moduleSize: 'middle', // 所有模块的尺寸
   maxCacheNum: 10, // 路由组件最大缓存数量
   maxStarMenus: 10, // 收藏导航的最大数量
   isBreadcrumb: true, // 是否展示导航面包屑

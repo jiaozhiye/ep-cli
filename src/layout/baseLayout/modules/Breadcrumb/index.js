@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-24 11:05:38
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-11-29 13:11:26
+ * @Last Modified time: 2020-01-07 10:10:23
  */
 import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
@@ -12,7 +12,8 @@ import routes from '@/routes';
 import classnames from 'classnames';
 import css from './index.module.less';
 
-import { Breadcrumb, Icon } from 'antd';
+import { Breadcrumb } from 'antd';
+import { HomeOutlined } from '@ant-design/icons';
 
 @withRouter
 class BreadCrumb extends Component {
@@ -27,7 +28,7 @@ class BreadCrumb extends Component {
             <span>{meta.title}</span>
           ) : (
             <Link to={route.path} className="ant-breadcrumb-link">
-              {i === 0 && meta.icon ? <Icon type={meta.icon} /> : null}
+              {i === 0 && meta.icon ? <HomeOutlined /> : null}
               <span>{meta.title}</span>
             </Link>
           )}
