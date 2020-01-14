@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-12 16:24:28
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-13 21:54:00
+ * @Last Modified time: 2020-01-14 19:14:39
  */
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
@@ -11,6 +11,7 @@ import memoizeOne from 'memoize-one';
 import _ from 'lodash';
 import config from '@/config';
 
+import { FormItemSort } from './formItemSort';
 import { Form, Button, Input, Select, Row, Col } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 
@@ -41,24 +42,28 @@ class BaseForm extends Component {
     cols: PropTypes.number, // 显示的列数
     labelCol: PropTypes.number, // 表单项 label 标签的宽度(栅格的列数)
     labelAlign: PropTypes.oneOf(['left', 'right']), // label 标签文本对齐方式
-    formType: PropTypes.oneOf(['add', 'edit', 'show', 'search']), // 表单类型
+    formType: PropTypes.oneOf(['default', 'onlyShow', 'search']), // 表单类型
     isSubmitBtn: PropTypes.bool, // 是否显示表单提交按钮
     defaultRows: PropTypes.number, // 默认展示几行
     onValuesChange: PropTypes.func, // 表单组件，表单项的值更新时触发回调事件
     onFinish: PropTypes.func, // 提交表单且数据验证成功后回调事件
-    onFinishFailed: PropTypes.func // 提交表单且数据验证失败后回调事件
+    onFinishFailed: PropTypes.func, // 提交表单且数据验证失败后回调事件
+    onCollapse: PropTypes.func, // 展开/收起按钮状态改变时的回调事件
+    onFormItemsChange: PropTypes.func // 表单配置项顺序变化时触发的回掉事件，和排序组件配合使用
   };
 
   static defaultProps = {
     cols: 4,
     labelCol: 6,
     labelAlign: 'right',
-    formType: 'add',
+    formType: 'default',
     isSubmitBtn: false,
     defaultRows: 1,
     onValuesChange: noop,
     onFinish: noop,
-    onFinishFailed: noop
+    onFinishFailed: noop,
+    onCollapse: noop,
+    onFormItemsChange: noop
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -73,23 +78,27 @@ class BaseForm extends Component {
     return this.getIsCollapse(this.formItems);
   }
 
+  get colSpan() {
+    return 24 / this.props.cols;
+  }
+
   constructor(props) {
     super(props);
     // form 组件实例
     this.formRef = createRef();
+    this.formLayout = {
+      labelCol: { span: this.props.labelCol },
+      wrapperCol: { span: 24 - this.props.labelCol }
+    };
     this.state = this.initialState();
-    this.isParamsError = this.initialHandle();
   }
 
   // 初始化 state
   initialState = () => {
-    const colSpan = 24 / this.props.cols;
-    const formLayout = {
-      labelCol: { span: this.props.labelCol },
-      wrapperCol: { span: 24 - this.props.labelCol }
-    };
     const expand = false;
-    return { colSpan, formLayout, expand };
+    const isParamsError = this.initialHandle();
+    const currentValues = this.props.initialValues || {};
+    return { expand, isParamsError, currentValues };
   };
 
   // 组件初始化方法，检查组件调用参数是否有误
@@ -198,11 +207,11 @@ class BaseForm extends Component {
     return this.props.items
       .map(x => {
         if (_.isObject(x.label)) {
-          x.label.disabled = formType === 'show' ? true : x.label.disabled;
+          x.label.disabled = formType === 'onlyShow' ? true : x.label.disabled;
         }
         return {
           ...x,
-          disabled: formType === 'show' ? true : x.disabled
+          disabled: formType === 'onlyShow' ? true : x.disabled
         };
       })
       .filter(x => !x.hidden);
@@ -215,18 +224,20 @@ class BaseForm extends Component {
 
   // 切换 展开/收起 状态
   setExpandHandle = () => {
-    this.setState(prevState => {
-      return { expand: !prevState.expand };
-    });
+    this.setState(
+      prevState => {
+        return { expand: !prevState.expand };
+      },
+      () => {
+        this.props.onCollapse(this.state.expand);
+      }
+    );
   };
 
   // 表单布局
   createFormLayout = arr => {
-    const { colSpan, expand } = this.state;
+    const { expand } = this.state;
     const { defaultRows, cols } = this.props;
-    const total = this.formItems.length;
-    const defaultPlayRows = defaultRows > Math.ceil(total / cols) ? Math.ceil(total / cols) : defaultRows;
-    const count = expand ? total : defaultPlayRows * cols - 1;
     const colsArr = [];
     arr.forEach(x => {
       const { offset = 0 } = x;
@@ -235,10 +246,13 @@ class BaseForm extends Component {
       }
       colsArr.push(x);
     });
+    const total = this.formItems.length;
+    const defaultPlayRows = defaultRows > Math.ceil(total / cols) ? Math.ceil(total / cols) : defaultRows;
+    const count = expand ? total : defaultPlayRows * cols - 1;
     const colFormItems = colsArr.map((x, i) => {
       const { fieldName, cols = 1 } = x;
       return (
-        <Col key={i} span={cols * colSpan} style={{ display: !this.isCollapse || i < count ? 'block' : 'none' }}>
+        <Col key={i} span={cols * this.colSpan} style={{ display: !this.isCollapse || i < count ? 'block' : 'none' }}>
           {fieldName && this.createFormItem(x)}
         </Col>
       );
@@ -246,54 +260,60 @@ class BaseForm extends Component {
     return [...colFormItems, this.createSearchButtonLayout()];
   };
 
-  // 头部搜索类型按钮布局
+  // 顶部搜索类型按钮布局
   createSearchButtonLayout = () => {
-    const { colSpan, expand } = this.state;
-    const { formType, isSubmitBtn, defaultRows, cols } = this.props;
+    const { expand, currentValues } = this.state;
+    const { formType, isSubmitBtn, defaultRows, cols, items, onFormItemsChange } = this.props;
     // 不是搜索类型
     if (formType !== 'search') return null;
     const total = this.formItems.length;
-    // 默认收起
     let offset = defaultRows * cols - total > 0 ? defaultRows * cols - total - 1 : 0;
-    // 展开
     if (!this.isCollapse || expand) {
       offset = cols - (total % cols) - 1;
     }
-    return this.formItems.length && isSubmitBtn ? (
-      <Col key={'-'} span={colSpan} offset={offset * colSpan} style={{ textAlign: 'right' }}>
-        <Form.Item noStyle>
-          <Button type="primary" htmlType="submit">
-            搜索
-          </Button>
-          <Button htmlType="button" style={{ marginLeft: '8px' }} onClick={this.RESET_FORM}>
-            重置
-          </Button>
-          {this.isCollapse ? (
-            <a style={{ marginLeft: 8, fontSize: 12 }} onClick={this.setExpandHandle}>
-              {expand ? <UpOutlined /> : <DownOutlined />} {expand ? '收起' : '展开'}
-            </a>
-          ) : null}
-        </Form.Item>
-      </Col>
-    ) : null;
+    return (
+      isSubmitBtn && (
+        <Col key={'-'} span={this.colSpan} offset={offset * this.colSpan} style={{ textAlign: 'right' }}>
+          <Form.Item noStyle>
+            <Button type="primary" htmlType="submit">
+              搜索
+            </Button>
+            <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.RESET_FORM}>
+              重置
+            </Button>
+            <FormItemSort
+              items={items}
+              values={currentValues}
+              style={{ marginLeft: 8 }}
+              onChange={list => {
+                onFormItemsChange(list);
+              }}
+            />
+            {this.isCollapse && (
+              <a style={{ marginLeft: 8, fontSize: 12 }} onClick={this.setExpandHandle}>
+                {expand ? <UpOutlined /> : <DownOutlined />} {expand ? '收起' : '展开'}
+              </a>
+            )}
+          </Form.Item>
+        </Col>
+      )
+    );
   };
 
   // 表单类型按钮列表
   createFormButtonLayout = () => {
-    const { colSpan } = this.state;
     const { formType, isSubmitBtn } = this.props;
     return (
-      this.formItems.length &&
       isSubmitBtn &&
-      formType !== 'show' && (
+      formType !== 'onlyShow' && (
         <Row gutter={0}>
-          <Col span={colSpan}>
+          <Col span={this.colSpan}>
             <Col offset={this.props.labelCol}>
               <Form.Item noStyle>
                 <Button type="primary" htmlType="submit">
                   提交
                 </Button>
-                <Button htmlType="button" style={{ marginLeft: '8px' }} onClick={this.RESET_FORM}>
+                <Button htmlType="button" style={{ marginLeft: 8 }} onClick={this.RESET_FORM}>
                   重置
                 </Button>
               </Form.Item>
@@ -304,16 +324,32 @@ class BaseForm extends Component {
     );
   };
 
+  // 自定义渲染表单项
+  renderFormItem = options => {
+    const { label, fieldName, rules = [], desc, render = noop } = options;
+    return (
+      <Form.Item label={this.createFormItemLabel(label)} required={this.getFormItemRequired(rules)}>
+        <Form.Item name={fieldName} rules={rules} noStyle>
+          {render()}
+        </Form.Item>
+        {desc && <Form.Item noStyle>{desc}</Form.Item>}
+      </Form.Item>
+    );
+  };
+
   // 表单元素
   createFormItem = x => {
     if (!_.isFunction(this[x.type])) {
       return this.warning(`配置项 ${x.fieldName} 的 type 类型错误`);
     }
-    return !x.invisible ? this[x.type](x) : null;
+    return !x.invisible ? (x.render ? this.renderFormItem(x) : this[x.type](x)) : null;
   };
 
   // 表单控件，表单项值变化的事件
   formValueChange = (changedValues, allValues) => {
+    this.setState(prevState => {
+      return { currentValues: Object.assign({}, prevState.currentValues, changedValues) };
+    });
     this.props.onValuesChange(changedValues, allValues);
   };
 
@@ -381,19 +417,20 @@ class BaseForm extends Component {
   };
 
   render() {
+    const { isParamsError } = this.state;
     const { initialValues, formType } = this.props;
-    const { formLayout } = this.state;
     return (
-      !this.isParamsError && (
+      !isParamsError && (
         <div className={classnames(css['base-form'])}>
           <Form
             ref={this.formRef}
             size={config.moduleSize}
-            {...formLayout}
+            {...this.formLayout}
             initialValues={initialValues}
             onValuesChange={this.formValueChange}
             onFinish={this.submitFinish}
             onFinishFailed={this.submitFinishFailed}
+            onSubmit={ev => ev.preventDefault()}
           >
             <Row gutter={0}>{this.createFormLayout(this.formItems)}</Row>
             {formType !== 'search' && this.createFormButtonLayout()}
