@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-12 16:24:28
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-14 19:14:39
+ * @Last Modified time: 2020-01-16 17:40:20
  */
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
@@ -65,10 +65,6 @@ class BaseForm extends Component {
     onCollapse: noop,
     onFormItemsChange: noop
   };
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return null;
-  }
 
   get formItems() {
     return this.getFormItems(this.props.formType);
@@ -237,7 +233,7 @@ class BaseForm extends Component {
   // 表单布局
   createFormLayout = arr => {
     const { expand } = this.state;
-    const { defaultRows, cols } = this.props;
+    const { formType, defaultRows, cols } = this.props;
     const colsArr = [];
     arr.forEach(x => {
       const { offset = 0 } = x;
@@ -252,7 +248,7 @@ class BaseForm extends Component {
     const colFormItems = colsArr.map((x, i) => {
       const { fieldName, cols = 1 } = x;
       return (
-        <Col key={i} span={cols * this.colSpan} style={{ display: !this.isCollapse || i < count ? 'block' : 'none' }}>
+        <Col key={i} span={cols * this.colSpan} style={formType === 'search' && { display: !this.isCollapse || i < count ? 'block' : 'none' }}>
           {fieldName && this.createFormItem(x)}
         </Col>
       );
