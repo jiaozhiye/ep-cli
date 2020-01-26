@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 14:08:56
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-16 14:52:19
+ * @Last Modified time: 2020-01-26 20:30:41
  */
 import React, { Component, createRef } from 'react';
 import classnames from 'classnames';
@@ -16,9 +16,11 @@ import { BaseTable } from '@/components';
 import tableData from '@/mock/tableData';
 
 import _ from 'lodash';
+import { func } from 'prop-types';
 
 class Dashboard extends Component {
   formRef = createRef();
+  tableRef = createRef();
 
   state = {
     formList: [
@@ -107,7 +109,10 @@ class Dashboard extends Component {
         ]
       }
     ],
-    list: tableData.data.records
+    list: tableData.data.records,
+    params: {
+      a: 9
+    }
   };
 
   clickHandle = async (a, b) => {
@@ -138,7 +143,8 @@ class Dashboard extends Component {
     this.setState(x => {
       x.list[0].date = '2012-12-12 12:12:12';
       return {
-        list: _.cloneDeep(x.list)
+        list: _.cloneDeep(x.list),
+        params: { a: 7 }
       };
     });
   };
@@ -161,7 +167,16 @@ class Dashboard extends Component {
         <div>
           <Button onClick={this.asdasd}>按钮</Button>
         </div>
-        <BaseTable columns={this.state.columns} dataSource={this.state.list} />
+        <BaseTable
+          ref={this.tableRef}
+          columns={this.state.columns}
+          dataSource={this.state.list}
+          onColumnsChange={columns => {
+            this.setState(x => {
+              return { columns };
+            });
+          }}
+        />
       </div>
     );
   }

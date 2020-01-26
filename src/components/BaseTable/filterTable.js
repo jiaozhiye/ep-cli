@@ -2,9 +2,9 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-16 18:43:56
+ * @Last Modified time: 2020-01-26 21:04:47
  */
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import memoizeOne from 'memoize-one';
 
@@ -31,7 +31,8 @@ export default (options = {}) => {
           params: PropTypes.object // 请求参数
         }),
         datakey: PropTypes.oneOfType([PropTypes.string, PropTypes.array]), // 接口返回的数据数组对应的数组路径
-        uidkey: PropTypes.string // 行数据的 uuid 字段名
+        uidkey: PropTypes.string, // 行数据的 uuid 字段名
+        onColumnsChange: PropTypes.func.isRequired // 表格列 顺序/显示隐藏 变化时的回调
       };
 
       static defaultProps = {
@@ -54,13 +55,36 @@ export default (options = {}) => {
         return columns;
       };
 
+      // 列字段的深度查找
+      deepFindColumn = (columns, mark) => {
+        let res = null;
+        for (let i = 0; i < columns.length; i++) {
+          if (Array.isArray(columns[i].children)) {
+            res = this.deepFindColumn(columns[i].children, mark);
+          }
+          if (res) {
+            return res;
+          }
+          if (columns[i].dataIndex === mark) {
+            res = columns[i];
+            break;
+          }
+        }
+        return res;
+      };
+
       render() {
-        const wrapProps = Object.assign({}, this.props, {
+        const { forwardedRef, ...rest } = this.props;
+        const wrapProps = Object.assign({}, rest, {
+          filterTableRef: this,
           columns: this.filterColumns
         });
-        return <WrappedComponent {...wrapProps} />;
+        return <WrappedComponent ref={forwardedRef} {...wrapProps} />;
       }
     }
-    return FilterTable;
+
+    return React.forwardRef((props, ref) => {
+      return <FilterTable {...props} forwardedRef={ref} />;
+    });
   };
 };

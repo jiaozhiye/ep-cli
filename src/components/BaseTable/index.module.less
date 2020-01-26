@@ -1,8 +1,26 @@
 /*
  * @Author: 焦质晔
  * @Date: 2020-01-14 19:41:30
- * @Last Modified by:   焦质晔
- * @Last Modified time: 2020-01-14 19:41:30
+ * @Last Modified by: 焦质晔
+ * @Last Modified time: 2020-01-26 21:07:56
  */
-.base-table {
+.table {
+  &-top {
+    line-height: 42px;
+    margin-bottom: @moduleMargin;
+    &-info {
+      float: left;
+    }
+    &-sort {
+      float: right;
+    }
+  }
+}
+.draggable-tree {
+  :global .ant-tree-list {
+    padding-left: 10px;
+    .ant-tree-switcher {
+      display: none;
+    }
+  }
 }

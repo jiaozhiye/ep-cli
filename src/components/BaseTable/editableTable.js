@@ -2,9 +2,9 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-16 18:42:58
+ * @Last Modified time: 2020-01-19 14:03:55
  */
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import memoizeOne from 'memoize-one';
 
@@ -32,12 +32,17 @@ export default (options = {}) => {
       };
 
       render() {
-        const wrapProps = Object.assign({}, this.props, {
+        const { forwardedRef, ...rest } = this.props;
+        const wrapProps = Object.assign({}, rest, {
+          editableTableRef: this,
           columns: this.editableColumns
         });
-        return <WrappedComponent {...wrapProps} />;
+        return <WrappedComponent ref={forwardedRef} {...wrapProps} />;
       }
     }
-    return EditableTable;
+
+    return React.forwardRef((props, ref) => {
+      return <EditableTable {...props} forwardedRef={ref} />;
+    });
   };
 };
