@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-26 21:02:45
+ * @Last Modified time: 2020-01-26 23:47:12
  */
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
@@ -16,9 +16,6 @@ const noop = () => {};
 export default (options = {}) => {
   return WrappedComponent => {
     class PageTable extends Component {
-      // displayName -> 定义调试时的组件 name
-      static displayName = `HOC(${WrappedComponent.displayName || WrappedComponent.name})`;
-
       static getDerivedStateFromProps(nextProps, prevState) {
         const fetchParams = Object.assign({}, nextProps.fetch.params, nextProps.filters, {
           current: prevState.pagination.current,
@@ -53,8 +50,8 @@ export default (options = {}) => {
         return this.getDataSource(this.props.dataSource, this.state.tableData);
       }
 
-      getDataSource = memoizeOne((propList, stateList) => {
-        return this.createDataSource(this.props.fetch.api ? stateList : propList);
+      getDataSource = memoizeOne((propTableList, stateTableData) => {
+        return this.createDataSource(this.props.fetch.api ? stateTableData : propTableList);
       });
 
       // 组件更新的钩子
@@ -87,7 +84,11 @@ export default (options = {}) => {
       // 处理列表数据
       createDataSource = data => {
         const { datakey, uidkey } = this.props;
+        // 列表数据数组
         const dataList = Array.isArray(data) ? data : _.get(data, datakey, []) || [];
+        // 数据总数
+        // const total = Array.isArray(data) ? dataList.length : _.get(data, datakey.replace(/[^\.]+$/, 'total')) || dataList.length;
+        // this.setPaginationTotal(total);
         // 初始化列表数据
         const list = dataList.map(x => {
           const target = this.setInitialValue(x);
@@ -115,6 +116,13 @@ export default (options = {}) => {
           _.set(item, dataIndex, val);
         });
         return item;
+      };
+
+      // 设置分页总数
+      setPaginationTotal = val => {
+        this.setState(prevState => {
+          return { pagination: { total: Number(val) } }
+        });
       };
 
       // ajax 获取列表数据
@@ -160,7 +168,6 @@ export default (options = {}) => {
         return uuid;
       };
 
-      // Table
       // 开始 Table 组件的 loading 效果
       startTableLoading() {
         this.setState(prevState => ({ loading: true }));

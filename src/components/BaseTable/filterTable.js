@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-26 21:04:47
+ * @Last Modified time: 2020-01-26 23:12:14
  */
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
@@ -15,9 +15,6 @@ const noop = () => {};
 export default (options = {}) => {
   return WrappedComponent => {
     class FilterTable extends Component {
-      // displayName -> 定义调试时的组件 name
-      static displayName = `HOC(${WrappedComponent.displayName || WrappedComponent.name})`;
-
       static propTypes = {
         columns: PropTypes.arrayOf(
           PropTypes.shape({
