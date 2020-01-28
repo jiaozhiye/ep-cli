@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-26 23:47:12
+ * @Last Modified time: 2020-01-28 23:48:14
  */
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
@@ -17,16 +17,20 @@ export default (options = {}) => {
   return WrappedComponent => {
     class PageTable extends Component {
       static getDerivedStateFromProps(nextProps, prevState) {
-        const fetchParams = Object.assign({}, nextProps.fetch.params, nextProps.filters, {
-          current: prevState.pagination.current,
-          pageSize: prevState.pagination.pageSize
+        const { dataSource, fetch, filters, sorter } = nextProps;
+        const { pagination } = prevState;
+        const fetchParams = Object.assign({}, fetch.params, filters, sorter, {
+          current: pagination.current,
+          pageSize: pagination.pageSize
         });
-        const fetchApi = nextProps.fetch.fetchApi;
         if (!_.isEqual(fetchParams, prevState.fetchParams)) {
           return { fetchParams };
         }
-        if (fetchApi !== prevState.fetchApi) {
-          return { fetchApi };
+        if (fetch.api !== prevState.fetchApi) {
+          return { fetchApi: fetch.api };
+        }
+        if (!fetch.api && dataSource.length) {
+          return { pagination: { ...pagination, total: dataSource.length } };
         }
         return null;
       }
@@ -45,14 +49,36 @@ export default (options = {}) => {
         return this.columnsFlatMap(columns);
       });
 
-      // Table 组件渲染的数据列表
-      get dataSource() {
-        return this.getDataSource(this.props.dataSource, this.state.tableData);
+      // Table 组件选择列配置
+      get rowSelection() {
+        return this.getRowSelection(this.props.rowSelection);
       }
 
-      getDataSource = memoizeOne((propTableList, stateTableData) => {
-        return this.createDataSource(this.props.fetch.api ? stateTableData : propTableList);
+      getRowSelection = memoizeOne(options => {
+        if (!options) {
+          return null;
+        }
+        const { uidkey } = this.props;
+        return Object.assign(
+          {},
+          { columnWidth: '50px', getCheckboxProps: row => ({ disabled: options.disabledRowKeys.includes(row[uidkey]) }) },
+          options
+        );
       });
+
+      // Table 组件渲染的数据列表
+      get dataSource() {
+        return this.getDataSource(this.props.dataSource, this.state.list);
+      }
+
+      getDataSource = memoizeOne((propTableList, stateTableList) => {
+        return this.createDataSource(this.props.fetch.api ? stateTableList : propTableList);
+      });
+
+      // 组件加载的钩子
+      componentDidMount() {
+        this.getTableList();
+      }
 
       // 组件更新的钩子
       componentDidUpdate(prevProps, prevState) {
@@ -67,37 +93,52 @@ export default (options = {}) => {
       // 初始化 state
       initialState = () => {
         const { pageNum, pageSize } = config.table;
+        const { fetch, filters, sorter } = this.props;
         const pagination = { current: pageNum, pageSize, total: 0 };
-        const fetchParams = Object.assign({}, this.props.fetch.params, this.props.filters, {
+        const fetchParams = Object.assign({}, fetch.params, filters, sorter, {
           current: pagination.current,
           pageSize: pagination.pageSize
         });
         return {
-          tableData: {}, // ajax 请求的数据
+          list: [], // 列表数据
           loading: false, // Table 加载数据的 loading
           pagination, // 分页参数
-          fetchApi: this.props.fetch.api, // ajax 请求接口
+          fetchApi: fetch.api, // ajax 请求接口
           fetchParams // ajax 请求参数
         };
       };
 
+      // 处理 ajax 返回的数据
+      createAjaxData = data => {
+        const list = this.createDataToArray(data);
+        const total = this.createDataTotal(data);
+        this.setState({ list });
+        this.setPaginationTotal(total || list.length);
+      };
+
+      // 数据转数组
+      createDataToArray = data => {
+        const { datakey } = this.props;
+        return Array.isArray(data) ? data : _.get(data, datakey, []) || [];
+      };
+
+      // 计算数据总量
+      createDataTotal = data => {
+        const { datakey } = this.props;
+        const totalKey = Array.isArray(datakey) ? [...datakey.slice(0, -1), 'total'] : datakey.replace(/[^.]+$/, 'total');
+        return _.get(data, totalKey) || 0;
+      };
+
       // 处理列表数据
-      createDataSource = data => {
-        const { datakey, uidkey } = this.props;
-        // 列表数据数组
-        const dataList = Array.isArray(data) ? data : _.get(data, datakey, []) || [];
-        // 数据总数
-        // const total = Array.isArray(data) ? dataList.length : _.get(data, datakey.replace(/[^\.]+$/, 'total')) || dataList.length;
-        // this.setPaginationTotal(total);
-        // 初始化列表数据
-        const list = dataList.map(x => {
-          const target = this.setInitialValue(x);
+      createDataSource = list => {
+        const { uidkey } = this.props;
+        return list.map(x => {
+          const target = this.setInitialValue(x); // 初始化列表数据
           return {
             _uid: x[uidkey] || x._uid || this.createUidKey(), // 字段值唯一不重复的 key
             ...target
           };
         });
-        return list;
       };
 
       // 处理列表数据的初始值
@@ -121,27 +162,39 @@ export default (options = {}) => {
       // 设置分页总数
       setPaginationTotal = val => {
         this.setState(prevState => {
-          return { pagination: { total: Number(val) } }
+          const { pagination } = prevState;
+          return { pagination: { ...pagination, total: Number(val) } };
         });
       };
 
       // ajax 获取列表数据
       getTableList = async () => {
+        if (!this.state.fetchApi) return;
         if (process.env.REACT_APP_MOCK_DATA === 'true') {
           const res = require('@/mock/tableData').default;
-          this.setState(prevState => ({ tableData: res.data }));
+          this.createAjaxData(res.data);
         } else {
           this.startTableLoading();
           try {
-            const { resultCode, data = {} } = await this.state.fetchApi(this.state.fetchParams);
-            if (resultCode === 200) {
-              this.setState(prevState => ({ tableData: data }));
+            const res = await this.state.fetchApi(this.state.fetchParams);
+            if (res.resultCode === 200) {
+              this.createAjaxData(res.data);
             }
           } catch (e) {
-            this.setState(prevState => ({ tableData: {} }));
+            this.createAjaxData({});
           }
           this.stopTableLoading();
         }
+      };
+
+      // TableT组件 change 事件，分页、排序、筛选变化时触发
+      tableChangeHandle = (pagination, filters, sorter) => {
+        const { filterOrSorterChange = noop } = this.props;
+        filterOrSorterChange(filters, sorter);
+        // 处理分页
+        this.setState(prevState => {
+          return { pagination: { ...prevState.pagination, current: pagination.current } };
+        });
       };
 
       // 获取 column 展平后的一维数组
@@ -168,14 +221,22 @@ export default (options = {}) => {
         return uuid;
       };
 
+      // 清空选择列的选中状态
+      clearRowSelection = () => {
+        const { rowSelection } = this.props;
+        if (_.isObject(rowSelection)) {
+          rowSelection.onChange([], []);
+        }
+      };
+
       // 开始 Table 组件的 loading 效果
       startTableLoading() {
-        this.setState(prevState => ({ loading: true }));
+        this.setState({ loading: true });
       }
 
       // 停止 Table 组件的 loading 效果
       stopTableLoading() {
-        this.setState(prevState => ({ loading: false }));
+        this.setState({ loading: false });
       }
 
       render() {
@@ -185,7 +246,9 @@ export default (options = {}) => {
           pageTableRef: this,
           dataSource: this.dataSource,
           loading,
-          total: pagination.total
+          pagination,
+          rowSelection: this.rowSelection,
+          onChange: this.tableChangeHandle
         });
         return <WrappedComponent ref={forwardedRef} {...wrapProps} />;
       }

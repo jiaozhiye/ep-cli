@@ -2,17 +2,27 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 19:41:30
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-26 21:07:56
+ * @Last Modified time: 2020-01-27 13:07:15
  */
 .table {
   &-top {
-    line-height: 42px;
     margin-bottom: @moduleMargin;
+    &-wrap {
+      display: flex;
+      height: 32px;
+      align-items: center;
+    }
     &-info {
-      float: left;
+      padding: 3px 0 3px 30px;
+      :global .ant-alert-icon {
+        top: 7px;
+        left: 10px;
+      }
+      &-link {
+        padding: 0 10px;
+      }
     }
     &-sort {
-      float: right;
     }
   }
 }

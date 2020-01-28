@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 19:25:10
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-26 21:15:40
+ * @Last Modified time: 2020-01-28 21:01:59
  */
 // index -> BaseTable 组件
 // filterTable -> FilterTable 组件，设计成高阶组件，用来修饰当前组件
@@ -44,6 +44,16 @@ class BaseTable extends Component {
     return res;
   };
 
+  // 清空 Table 组件所有操作的方法
+  clearTableHandle = () => {
+    // 清空选择列的选中状态
+    this.props.pageTableRef.clearRowSelection();
+    // 清空表头筛选条件
+    this.props.filterTableRef.clearFilters();
+    // 清空表头排序
+    this.props.filterTableRef.clearSorter();
+  };
+
   // 向外公开的方法
   START_LOADING = () => {
     this.props.pageTableRef.startTableLoading();
@@ -60,8 +70,12 @@ class BaseTable extends Component {
     return (
       <div className={classnames(css['table'])}>
         <div className={classnames(css['table-top'], `clearfix`)}>
-          <TableInfo total={wrapProps.total} />
-          <ColumnSort columns={this.props.columns} onChange={columns => this.props.onColumnsChange(columns)} />
+          <div className={classnames(css[`table-top-wrap`], `fl`)}>
+            <TableInfo total={wrapProps.pagination.total} selection={wrapProps.rowSelection} onClearHandle={this.clearTableHandle} />
+          </div>
+          <div className={classnames(css[`table-top-wrap`], `fr`)}>
+            <ColumnSort columns={this.props.columns} onChange={columns => this.props.onColumnsChange(columns)} />
+          </div>
         </div>
         <Table {...wrapProps} rowKey={x => x._uid} />
       </div>

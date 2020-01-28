@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 14:08:56
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-26 20:30:41
+ * @Last Modified time: 2020-01-28 23:11:18
  */
 import React, { Component, createRef } from 'react';
 import classnames from 'classnames';
@@ -16,7 +16,8 @@ import { BaseTable } from '@/components';
 import tableData from '@/mock/tableData';
 
 import _ from 'lodash';
-import { func } from 'prop-types';
+
+const noop = () => {};
 
 class Dashboard extends Component {
   formRef = createRef();
@@ -84,11 +85,18 @@ class Dashboard extends Component {
     columns: [
       {
         dataIndex: 'date',
-        title: '日期'
+        title: '日期',
+        filter: {
+          type: 'date'
+        }
       },
       {
         dataIndex: ['person', 'name'],
-        title: '姓名'
+        title: '姓名',
+        sorter: true,
+        filter: {
+          type: 'text'
+        }
       },
       {
         dataIndex: ['person', 'sex'],
@@ -97,22 +105,36 @@ class Dashboard extends Component {
       {
         dataIndex: 'price',
         title: '价格',
-        precision: 2
+        precision: 2,
+        sorter: true,
+        filter: {
+          type: 'range-number'
+        }
       },
       {
         dataIndex: 'state',
         title: '状态',
+        sorter: true,
         dictList: [
           { text: '已完成', value: 1 },
           { text: '处理中', value: 2 },
           { text: '未完成', value: 3 }
-        ]
+        ],
+        filter: {
+          type: 'radio',
+          items: [
+            { text: '已完成', value: 1 },
+            { text: '处理中', value: 2 },
+            { text: '未完成', value: 3 }
+          ]
+        }
       }
     ],
     list: tableData.data.records,
     params: {
       a: 9
-    }
+    },
+    selectedKeys: []
   };
 
   clickHandle = async (a, b) => {
@@ -147,6 +169,11 @@ class Dashboard extends Component {
         params: { a: 7 }
       };
     });
+    this.setState(x => {
+      return {
+        selectedKeys: [1]
+      };
+    });
   };
 
   render() {
@@ -170,11 +197,22 @@ class Dashboard extends Component {
         <BaseTable
           ref={this.tableRef}
           columns={this.state.columns}
-          dataSource={this.state.list}
+          // dataSource={this.state.list}
+          fetch={{
+            api: noop,
+            params: this.state.params
+          }}
+          uidkey={`id`}
+          rowSelection={{
+            type: 'checkbox',
+            selectedRowKeys: this.state.selectedKeys,
+            disabledRowKeys: [2],
+            onChange: (selectedRowKeys, selectedRows) => {
+              this.setState({ selectedKeys: selectedRowKeys });
+            }
+          }}
           onColumnsChange={columns => {
-            this.setState(x => {
-              return { columns };
-            });
+            this.setState({ columns });
           }}
         />
       </div>

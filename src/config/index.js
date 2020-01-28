@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019/6/20
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-13 13:32:51
+ * @Last Modified time: 2020-01-27 19:24:50
  */
 export default {
   systemName: '奥迪EP系统',
@@ -12,7 +12,7 @@ export default {
   isBreadcrumb: true, // 是否展示导航面包屑
   table: {
     pageNum: 1,
-    pageSize: 20,
+    pageSize: 10,
     serverSort: false,
     serverFilter: false
   },

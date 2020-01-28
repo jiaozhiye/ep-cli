@@ -2,8 +2,10 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 20:16:56
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-01 09:46:23
+ * @Last Modified time: 2020-01-28 22:46:49
  */
+import moment from 'moment';
+
 // No-op function
 export const noop = () => {};
 
@@ -39,6 +41,26 @@ export const throttle = (fn, delay) => {
       fn.lastTime = nowTime;
     }
   };
+};
+
+// moment 日期对象 -> 字符串
+export const dateFormat = date => {
+  return moment(date).format('YYYY-MM-DD');
+};
+
+// moment 日期对象 -> 字符串
+export const dateTimeFormat = date => {
+  return moment(date).format('YYYY-MM-DD HH:mm:ss');
+};
+
+// 字符串 -> moment 日期对象
+export const dateToMoment = dateText => {
+  return dateText ? moment(dateText, 'YYYY-MM-DD') : null;
+};
+
+// 字符串 -> moment 日期对象
+export const dateTimeToMoment = dateText => {
+  return dateText ? moment(dateText, 'YYYY-MM-DD HH:mm:ss') : null;
 };
 
 export const contains = (root, target) => {
