@@ -2,13 +2,13 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-01 10:03:58
+ * @Last Modified time: 2020-01-29 20:40:33
  */
 import axios from 'axios';
 import qs from 'qs';
 import { getToken, removeToken } from '@/utils/cookie';
 import config from '@/assets/js/config';
-import { message, notification  } from 'antd';
+import { message, notification } from 'antd';
 
 console.info(config.envText);
 

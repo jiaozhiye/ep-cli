@@ -2,20 +2,19 @@
  * @Author: 焦质晔
  * @Date: 2020-01-26 19:00:22
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-27 22:30:11
+ * @Last Modified time: 2020-01-30 00:07:36
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import _ from 'lodash';
 
-import { Alert, Button } from 'antd';
+import { Alert } from 'antd';
 
 import classnames from 'classnames';
 import css from './index.module.less';
 
 const noop = () => {};
-
 export class TableInfo extends Component {
   static propTypes = {
     total: PropTypes.number.isRequired, // 数据总数

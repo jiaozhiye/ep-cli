@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 14:08:56
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-28 23:11:18
+ * @Last Modified time: 2020-01-29 14:11:14
  */
 import React, { Component, createRef } from 'react';
 import classnames from 'classnames';
@@ -197,11 +197,7 @@ class Dashboard extends Component {
         <BaseTable
           ref={this.tableRef}
           columns={this.state.columns}
-          // dataSource={this.state.list}
-          fetch={{
-            api: noop,
-            params: this.state.params
-          }}
+          dataSource={this.state.list}
           uidkey={`id`}
           rowSelection={{
             type: 'checkbox',
