@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 10:03:51
+ * @Last Modified time: 2020-01-30 12:03:30
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -65,7 +65,7 @@ export default WrappedComponent => {
     static getDerivedStateFromProps(nextProps, prevState) {
       const { dataSource, fetch } = nextProps;
       let derivedState = null;
-      if (!fetch.api && dataSource.length !== prevState.total && !prevState.isFiltered) {
+      if (!fetch.api && !prevState.isFiltered && dataSource.length !== prevState.total) {
         return Object.assign({}, derivedState, { total: dataSource.length });
       }
       return derivedState;
@@ -108,7 +108,7 @@ export default WrappedComponent => {
         filteredInfo: {},
         sortedInfo: {},
         total: 0, // 分页数据总数
-        isFiltered: false // 当前是否为存在表头筛选的条件
+        isFiltered: false // 是否表头筛选过（是否存在表头筛选的条件）
       };
     };
 
@@ -381,7 +381,7 @@ export default WrappedComponent => {
       this.setState({ total: Number(val) });
     };
 
-    // 改变表头筛选的条件状态
+    // 改变表头筛选状态
     changeFilteredHandle = bool => {
       this.setState({ isFiltered: bool });
     };

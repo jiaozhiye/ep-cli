@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 19:25:10
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 00:07:56
+ * @Last Modified time: 2020-01-30 10:26:03
  */
 import React, { Component } from 'react';
 import { TableContext } from './tableContext';
@@ -45,7 +45,7 @@ export default WrappedComponent => {
     render() {
       const { forwardedRef, ...rest } = this.props;
       const wrapProps = Object.assign({}, rest, {
-        columns: this.createFilterColumns(this.props.columns)
+        columns: this.createFilterColumns(rest.columns)
       });
       return (
         <div className={classnames(css['table'])}>
