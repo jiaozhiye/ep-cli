@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 10:03:49
+ * @Last Modified time: 2020-01-30 23:05:01
  */
 import React, { Component } from 'react';
 import memoizeOne from 'memoize-one';
@@ -18,7 +18,7 @@ export default WrappedComponent => {
     static contextType = TableContext;
 
     static getDerivedStateFromProps(nextProps, prevState) {
-      const { fetch, filters, sorter } = nextProps;
+      const { dataSource, fetch, filters, sorter } = nextProps;
       const { pagination } = prevState;
       const fetchParams = Object.assign({}, fetch.params, filters, sorter, { current: pagination.current, pageSize: pagination.pageSize });
       let derivedState = null;
@@ -28,6 +28,9 @@ export default WrappedComponent => {
       if (fetch.api !== prevState.fetchApi) {
         derivedState = Object.assign({}, derivedState, { fetchApi: fetch.api });
       }
+      if (dataSource.length !== prevState._total) {
+        derivedState = Object.assign({}, derivedState, { _total: dataSource.length });
+      }
       return derivedState;
     }
 
@@ -35,6 +38,40 @@ export default WrappedComponent => {
       super(props);
       this.state = this.initialState();
     }
+
+    // 组件加载的钩子
+    componentDidMount() {
+      this.getTableList();
+    }
+
+    // 组件更新的钩子
+    componentDidUpdate(prevProps, prevState) {
+      if (!_.isEqual(prevState.fetchParams, this.state.fetchParams)) {
+        this.getTableList();
+      }
+      if (prevState.fetchApi !== this.state.fetchApi) {
+        this.getTableList();
+      }
+      if (prevState._total !== this.state._total) {
+        this.context.onTotalChange(this.state._total);
+      }
+    }
+
+    // 初始化 state
+    initialState = () => {
+      const { pageNum, pageSize } = config.table;
+      const { dataSource, fetch, filters, sorter } = this.props;
+      const pagination = { current: pageNum, pageSize };
+      const fetchParams = Object.assign({}, fetch.params, filters, sorter, pagination);
+      return {
+        list: [], // 列表数据
+        loading: false, // Table 加载数据的 loading
+        pagination, // 分页参数
+        fetchApi: fetch.api, // ajax 请求接口
+        fetchParams, // ajax 请求参数
+        _total: dataSource.length // 传入列表数据的数量(参考变量)
+      };
+    };
 
     // 展平后的表格列
     get flatColumns() {
@@ -71,36 +108,6 @@ export default WrappedComponent => {
       const { fetch } = this.props;
       return this.createDataSource(fetch.api ? stateTableList : propTableList);
     });
-
-    // 组件加载的钩子
-    componentDidMount() {
-      this.getTableList();
-    }
-
-    // 组件更新的钩子
-    componentDidUpdate(prevProps, prevState) {
-      if (!_.isEqual(prevState.fetchParams, this.state.fetchParams)) {
-        this.getTableList();
-      }
-      if (prevState.fetchApi !== this.state.fetchApi) {
-        this.getTableList();
-      }
-    }
-
-    // 初始化 state
-    initialState = () => {
-      const { pageNum, pageSize } = config.table;
-      const { fetch, filters, sorter } = this.props;
-      const pagination = { current: pageNum, pageSize };
-      const fetchParams = Object.assign({}, fetch.params, filters, sorter, pagination);
-      return {
-        list: [], // 列表数据
-        loading: false, // Table 加载数据的 loading
-        pagination, // 分页参数
-        fetchApi: fetch.api, // ajax 请求接口
-        fetchParams // ajax 请求参数
-      };
-    };
 
     // 处理 ajax 返回的数据
     createAjaxData = data => {
@@ -175,17 +182,12 @@ export default WrappedComponent => {
 
     // TableT组件 change 事件，分页、排序、筛选变化时触发
     tableChangeHandle = (pagination, filters, sorter, { currentDataSource }) => {
-      const { onFilterOrSorterChange } = this.context;
+      const { onFilterOrSorterChange } = this.props;
       const { serverFilter } = config.table;
       onFilterOrSorterChange(filters, sorter);
       // 在非服务端筛选时，处理分页总数
       if (!serverFilter) {
         this.context.onTotalChange(currentDataSource.length);
-        if (Object.values(filters).some(x => x !== null)) {
-          this.context.onFilteredChange(true);
-        } else {
-          this.context.onFilteredChange(false);
-        }
       }
       // 处理分页
       this.setState(prevState => {

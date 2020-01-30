@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 12:03:30
+ * @Last Modified time: 2020-01-30 23:08:36
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -23,58 +23,10 @@ export default WrappedComponent => {
   class FilterTable extends Component {
     static contextType = TableContext;
 
-    static propTypes = {
-      columns: PropTypes.arrayOf(
-        PropTypes.shape({
-          dataIndex: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired, // 列数据在数据项中对应的数组路径
-          title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired // 列头显示文字
-        })
-      ),
-      dataSource: PropTypes.array, // 数据数组
-      fetch: PropTypes.shape({
-        api: PropTypes.func, // 请求数据列表的 ajax 接口
-        params: PropTypes.object // 请求参数
-      }),
-      datakey: PropTypes.oneOfType([PropTypes.string, PropTypes.array]), // 接口返回的数据数组对应的数组路径
-      uidkey: PropTypes.string, // 行数据的 uuid 字段名
-      rowSelection: PropTypes.shape({
-        type: PropTypes.string, // 多选/单选，checkbox/radio，默认 checkbox
-        selectedRowKeys: PropTypes.array.isRequired, // 选中项的 key 数组
-        disabledRowKeys: PropTypes.array, // 禁止选中项的 key 数组
-        onChange: PropTypes.func.isRequired // 选中项发生变化时的回调
-      }),
-      sorter: PropTypes.bool, // 列排序
-      filter: PropTypes.shape({
-        type: PropTypes.string.isRequired, // 列筛选类型 text/checkbox/radio/number/range-number/date/range-date
-        items: PropTypes.array // 筛选列表项
-      }),
-      expandable: PropTypes.shape({
-        expandedRowRender: PropTypes.func, // 展开行渲染方法，返回 JSX 节点，可实现嵌套子表格
-        onExpand: PropTypes.func // 点击展开图标时触发
-      }),
-      onColumnsChange: PropTypes.func.isRequired // 表格列 顺序/显示隐藏 变化时的回调
+    state = {
+      filteredInfo: {},
+      sortedInfo: {}
     };
-
-    static defaultProps = {
-      dataSource: [],
-      datakey: 'records',
-      uidkey: 'uid',
-      fetch: {}
-    };
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-      const { dataSource, fetch } = nextProps;
-      let derivedState = null;
-      if (!fetch.api && !prevState.isFiltered && dataSource.length !== prevState.total) {
-        return Object.assign({}, derivedState, { total: dataSource.length });
-      }
-      return derivedState;
-    }
-
-    constructor(props) {
-      super(props);
-      this.state = this.initialState();
-    }
 
     get filterColumns() {
       return this.createFilterColumns(this.props.columns);
@@ -101,16 +53,6 @@ export default WrappedComponent => {
     getSorter = memoizeOne(sorter => {
       return sorter.order ? { fieldSort: `${sorter.columnKey}=${sorter.order}` } : null;
     });
-
-    // 初始化 state
-    initialState = () => {
-      return {
-        filteredInfo: {},
-        sortedInfo: {},
-        total: 0, // 分页数据总数
-        isFiltered: false // 是否表头筛选过（是否存在表头筛选的条件）
-      };
-    };
 
     // 创建 FilterTable 组件 columns
     createFilterColumns = columns => {
@@ -150,6 +92,13 @@ export default WrappedComponent => {
         sorter: !serverSort ? sorter : true,
         sortOrder: sortedInfo.columnKey === key && sortedInfo.order
       };
+    };
+
+    // 创建自定义的表头筛选
+    createFilterProps = column => {
+      const { serverFilter } = config.table;
+      const { type } = column.filter;
+      return this[type](column, serverFilter);
     };
 
     [`checkbox`] = (column, isServerFilter) => {
@@ -324,13 +273,6 @@ export default WrappedComponent => {
       };
     };
 
-    // 创建自定义的表头筛选
-    createFilterProps = column => {
-      const { serverFilter } = config.table;
-      const { type } = column.filter;
-      return this[type](column, serverFilter);
-    };
-
     // 获取筛选按钮
     getColumnSearchButtons = (confirm, clearFilters) => (
       <Row style={{ marginTop: 8 }} gutter={8}>
@@ -361,8 +303,7 @@ export default WrappedComponent => {
       this.setState({ filteredInfo: {} });
       // 在非服务端筛选时，处理分页总数
       if (!serverFilter) {
-        this.changeTotalHandle(this.props.dataSource.length);
-        this.changeFilteredHandle(false);
+        this.context.onTotalChange(this.props.dataSource.length);
       }
     };
 
@@ -376,36 +317,16 @@ export default WrappedComponent => {
       this.setState({ filteredInfo: filters, sortedInfo: sorter });
     };
 
-    // 改变分页 total
-    changeTotalHandle = val => {
-      this.setState({ total: Number(val) });
-    };
-
-    // 改变表头筛选状态
-    changeFilteredHandle = bool => {
-      this.setState({ isFiltered: bool });
-    };
-
     render() {
       const { forwardedRef, ...rest } = this.props;
       const wrapProps = Object.assign({}, rest, {
         filterTableRef: this,
         columns: this.filterColumns,
         filters: this.filters,
-        sorter: this.sorter
-      });
-      const contextValue = {
-        total: this.state.total,
-        isFiltered: this.state.isFiltered,
-        onTotalChange: this.changeTotalHandle,
-        onFilteredChange: this.changeFilteredHandle,
+        sorter: this.sorter,
         onFilterOrSorterChange: this.filterOrSorterChange
-      };
-      return (
-        <TableContext.Provider value={contextValue}>
-          <WrappedComponent ref={forwardedRef} {...wrapProps} />
-        </TableContext.Provider>
-      );
+      });
+      return <WrappedComponent ref={forwardedRef} {...wrapProps} />;
     }
   }
 
