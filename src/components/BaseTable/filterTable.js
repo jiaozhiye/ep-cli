@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 00:06:51
+ * @Last Modified time: 2020-01-30 10:03:51
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -62,6 +62,15 @@ export default WrappedComponent => {
       fetch: {}
     };
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+      const { dataSource, fetch } = nextProps;
+      let derivedState = null;
+      if (!fetch.api && dataSource.length !== prevState.total && !prevState.isFiltered) {
+        return Object.assign({}, derivedState, { total: dataSource.length });
+      }
+      return derivedState;
+    }
+
     constructor(props) {
       super(props);
       this.state = this.initialState();
@@ -98,7 +107,8 @@ export default WrappedComponent => {
       return {
         filteredInfo: {},
         sortedInfo: {},
-        total: 0
+        total: 0, // 分页数据总数
+        isFiltered: false // 当前是否为存在表头筛选的条件
       };
     };
 
@@ -349,7 +359,11 @@ export default WrappedComponent => {
     clearFilters = () => {
       const { serverFilter } = config.table;
       this.setState({ filteredInfo: {} });
-      !serverFilter && this.changeTotalHandle(this.props.dataSource.length);
+      // 在非服务端筛选时，处理分页总数
+      if (!serverFilter) {
+        this.changeTotalHandle(this.props.dataSource.length);
+        this.changeFilteredHandle(false);
+      }
     };
 
     // 清空表头排序
@@ -362,8 +376,14 @@ export default WrappedComponent => {
       this.setState({ filteredInfo: filters, sortedInfo: sorter });
     };
 
+    // 改变分页 total
     changeTotalHandle = val => {
       this.setState({ total: Number(val) });
+    };
+
+    // 改变表头筛选的条件状态
+    changeFilteredHandle = bool => {
+      this.setState({ isFiltered: bool });
     };
 
     render() {
@@ -372,12 +392,14 @@ export default WrappedComponent => {
         filterTableRef: this,
         columns: this.filterColumns,
         filters: this.filters,
-        sorter: this.sorter,
-        onFilterOrSorterChange: this.filterOrSorterChange
+        sorter: this.sorter
       });
       const contextValue = {
         total: this.state.total,
-        onTotalChange: this.changeTotalHandle
+        isFiltered: this.state.isFiltered,
+        onTotalChange: this.changeTotalHandle,
+        onFilteredChange: this.changeFilteredHandle,
+        onFilterOrSorterChange: this.filterOrSorterChange
       };
       return (
         <TableContext.Provider value={contextValue}>

@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 00:07:13
+ * @Last Modified time: 2020-01-30 10:03:49
  */
 import React, { Component } from 'react';
 import memoizeOne from 'memoize-one';
@@ -18,7 +18,7 @@ export default WrappedComponent => {
     static contextType = TableContext;
 
     static getDerivedStateFromProps(nextProps, prevState) {
-      const { dataSource, fetch, filters, sorter } = nextProps;
+      const { fetch, filters, sorter } = nextProps;
       const { pagination } = prevState;
       const fetchParams = Object.assign({}, fetch.params, filters, sorter, { current: pagination.current, pageSize: pagination.pageSize });
       let derivedState = null;
@@ -175,11 +175,18 @@ export default WrappedComponent => {
 
     // TableT组件 change 事件，分页、排序、筛选变化时触发
     tableChangeHandle = (pagination, filters, sorter, { currentDataSource }) => {
-      const { onFilterOrSorterChange } = this.props;
+      const { onFilterOrSorterChange } = this.context;
       const { serverFilter } = config.table;
       onFilterOrSorterChange(filters, sorter);
       // 在非服务端筛选时，处理分页总数
-      !serverFilter && this.context.onTotalChange(currentDataSource.length);
+      if (!serverFilter) {
+        this.context.onTotalChange(currentDataSource.length);
+        if (Object.values(filters).some(x => x !== null)) {
+          this.context.onFilteredChange(true);
+        } else {
+          this.context.onFilteredChange(false);
+        }
+      }
       // 处理分页
       this.setState(prevState => {
         return { pagination: { ...prevState.pagination, current: pagination.current } };
