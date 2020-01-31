@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 14:12:19
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-01 12:05:24
+ * @Last Modified time: 2020-01-31 15:08:59
  */
 import React, { Component } from 'react';
 import { hot } from 'react-hot-loader';
@@ -18,6 +18,7 @@ import { ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 
 import '@/assets/css/style.less';
+import '@/assets/css/iconfont.css';
 
 @hot(module)
 class App extends Component {

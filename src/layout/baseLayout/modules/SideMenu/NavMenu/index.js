@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-28 14:32:05
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2019-12-26 07:55:33
+ * @Last Modified time: 2020-01-31 15:40:04
  */
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
@@ -17,13 +17,24 @@ import classnames from 'classnames';
 import css from './index.module.less';
 import variables from '@/assets/css/variables.less';
 
-import { Menu, Icon } from 'antd';
+import { Menu } from 'antd';
 const SubMenu = Menu.SubMenu;
 
 const getOpenKeys = props => {
   const { pathname: path } = props.location;
   const stepMatchs = matchRoutes(routes, path).map(x => x.match);
   return stepMatchs.map(x => x.path).slice(1);
+};
+
+const getIcon = icon => {
+  if (typeof icon === 'string' && icon.length) {
+    return (
+      <span className="anticon">
+        <i className={classnames(`iconfont`, icon)} />
+      </span>
+    );
+  }
+  return null;
 };
 
 @withRouter
@@ -76,7 +87,7 @@ class NavMenu extends Component {
           key={item.path}
           title={
             <span>
-              {item.icon && <Icon type={item.icon} />}
+              {getIcon(item.icon)}
               <span>{item.title}</span>
             </span>
           }
@@ -96,7 +107,7 @@ class NavMenu extends Component {
     if (/^https?:\/\//.test(path)) {
       return (
         <a href={path} target={target}>
-          {item.icon && <Icon type={item.icon} />}
+          {getIcon(item.icon)}
           <span>{item.title}</span>
         </a>
       );
@@ -104,7 +115,7 @@ class NavMenu extends Component {
     const { location } = this.props;
     return (
       <Link to={path} target={target} replace={path === location.pathname}>
-        {item.icon && <Icon type={item.icon} />}
+        {getIcon(item.icon)}
         <span>{item.title}</span>
       </Link>
     );
@@ -124,7 +135,14 @@ class NavMenu extends Component {
     const defaultProps = collapsed ? {} : { openKeys };
     return (
       <div className={classnames(css['nav-menu'])}>
-        <Menu theme="dark" mode="inline" style={{ backgroundColor: sideBgColor }} {...defaultProps} selectedKeys={selectedKeys} onOpenChange={this.onOpenChange}>
+        <Menu
+          theme="dark"
+          mode="inline"
+          style={{ backgroundColor: sideBgColor }}
+          {...defaultProps}
+          selectedKeys={selectedKeys}
+          onOpenChange={this.onOpenChange}
+        >
           {this.getNavMenuItems(menuList)}
         </Menu>
       </div>

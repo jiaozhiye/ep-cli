@@ -2,10 +2,9 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 23:08:36
+ * @Last Modified time: 2020-01-31 11:45:29
  */
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import memoizeOne from 'memoize-one';
 import { TableContext } from './tableContext';
 

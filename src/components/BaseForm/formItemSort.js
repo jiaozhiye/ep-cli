@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 15:11:59
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-14 17:47:19
+ * @Last Modified time: 2020-01-31 11:41:01
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -148,7 +148,7 @@ export class FormItemSort extends Component {
     const { style } = this.props;
     return (
       <Dropdown overlay={this.popup()} trigger={['click']} overlayStyle={{ minWidth: 120 }}>
-        <a className={css['ant-dropdown-link']} href="#" style={{ ...style, paddingTop: 5, paddingBottom: 5 }}>
+        <a href="#" style={{ ...style, paddingTop: 5, paddingBottom: 5 }}>
           排序
         </a>
       </Dropdown>

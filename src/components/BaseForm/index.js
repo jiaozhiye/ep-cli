@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-12 16:24:28
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-16 17:40:20
+ * @Last Modified time: 2020-01-31 11:40:14
  */
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
@@ -66,6 +66,17 @@ class BaseForm extends Component {
     onFormItemsChange: noop
   };
 
+  constructor(props) {
+    super(props);
+    // form 组件实例
+    this.formRef = createRef();
+    this.formLayout = {
+      labelCol: { span: this.props.labelCol },
+      wrapperCol: { span: 24 - this.props.labelCol }
+    };
+    this.state = this.initialState();
+  }
+
   get formItems() {
     return this.getFormItems(this.props.formType);
   }
@@ -76,17 +87,6 @@ class BaseForm extends Component {
 
   get colSpan() {
     return 24 / this.props.cols;
-  }
-
-  constructor(props) {
-    super(props);
-    // form 组件实例
-    this.formRef = createRef();
-    this.formLayout = {
-      labelCol: { span: this.props.labelCol },
-      wrapperCol: { span: 24 - this.props.labelCol }
-    };
-    this.state = this.initialState();
   }
 
   // 初始化 state
