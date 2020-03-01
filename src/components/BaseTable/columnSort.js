@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-26 19:00:22
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-29 23:48:15
+ * @Last Modified time: 2020-02-06 19:16:48
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -145,7 +145,7 @@ export class ColumnSort extends Component {
 
   render() {
     return (
-      <Dropdown className={classnames(css['table-top-sort'])} overlay={this.popup()} trigger={['click']} overlayStyle={{ minWidth: 120 }}>
+      <Dropdown className={classnames(css['table-top-wrap-sort'])} overlay={this.popup()} trigger={['click']} overlayStyle={{ minWidth: 120 }}>
         <a href="#">
           <FilterOutlined /> 列筛选排序
         </a>

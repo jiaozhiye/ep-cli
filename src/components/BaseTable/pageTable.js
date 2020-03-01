@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 23:05:01
+ * @Last Modified time: 2020-02-08 13:50:22
  */
 import React, { Component } from 'react';
 import memoizeOne from 'memoize-one';
@@ -10,6 +10,7 @@ import { TableContext } from './tableContext';
 
 import _ from 'lodash';
 import config from '@/config';
+import { createUidKey, columnsFlatMap } from './utils';
 
 const noop = () => {};
 
@@ -79,7 +80,7 @@ export default WrappedComponent => {
     }
 
     getFlatColumns = memoizeOne(columns => {
-      return this.columnsFlatMap(columns);
+      return columnsFlatMap(columns);
     });
 
     // Table 组件选择列配置
@@ -94,7 +95,7 @@ export default WrappedComponent => {
       const { uidkey } = this.props;
       return Object.assign(
         {},
-        { columnWidth: '50px', getCheckboxProps: row => ({ disabled: options.disabledRowKeys.includes(row[uidkey]) }) },
+        { columnWidth: 50, fixed: true, getCheckboxProps: row => ({ disabled: options.disabledRowKeys.includes(row[uidkey]) }) },
         options
       );
     });
@@ -113,8 +114,8 @@ export default WrappedComponent => {
     createAjaxData = data => {
       const list = this.createDataToArray(data);
       const total = this.createDataTotal(data);
-      this.setState({ list });
       this.context.onTotalChange(total || list.length);
+      this.setState({ list });
     };
 
     // 数据转数组
@@ -133,20 +134,22 @@ export default WrappedComponent => {
     // 处理列表数据
     createDataSource = list => {
       const { uidkey } = this.props;
-      return list.map(x => {
+      return list.map((x, i) => {
         const target = this.setInitialValue(x); // 初始化列表数据
         return {
-          _uid: x[uidkey] || x._uid || this.createUidKey(), // 字段值唯一不重复的 key
+          _uid: x[uidkey] || x._uid || createUidKey(), // 字段值唯一不重复的 key
+          index: i,
           ...target
         };
       });
     };
 
     // 处理列表数据的初始值
-    setInitialValue = item => {
+    setInitialValue = row => {
+      const res = { ...row };
       this.flatColumns.forEach(x => {
         const { dataIndex, precision } = x;
-        let val = _.get(item, dataIndex);
+        let val = _.get(row, dataIndex);
         // 设置数据默认值
         if (_.isUndefined(val) || _.isNull(val)) {
           val = '';
@@ -155,9 +158,9 @@ export default WrappedComponent => {
         if (precision >= 0 && !isNaN(Number(val))) {
           val = Number(val).toFixed(precision);
         }
-        _.set(item, dataIndex, val);
+        _.set(res, dataIndex, val);
       });
-      return item;
+      return res;
     };
 
     // ajax 获取列表数据
@@ -195,30 +198,6 @@ export default WrappedComponent => {
       });
     };
 
-    // 获取 column 展平后的一维数组
-    columnsFlatMap = columns => {
-      let res = [];
-      columns.forEach(x => {
-        let target = { ...x };
-        if (Array.isArray(target.children)) {
-          res.push(...this.columnsFlatMap(target.children));
-        }
-        delete target.children;
-        res.push(target);
-      });
-      return res;
-    };
-
-    // 生成 uuid key
-    createUidKey = () => {
-      const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        let r = (Math.random() * 16) | 0;
-        let v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      });
-      return uuid;
-    };
-
     // 清空选择列的选中状态
     clearRowSelection = () => {
       const { rowSelection } = this.props;
@@ -245,7 +224,7 @@ export default WrappedComponent => {
         pageTableRef: this,
         dataSource: this.dataSource,
         loading,
-        pagination: { ...pagination, total },
+        pagination: rest.showPagination ? { ...pagination, total } : false,
         rowSelection: this.rowSelection,
         onChange: this.tableChangeHandle
       });

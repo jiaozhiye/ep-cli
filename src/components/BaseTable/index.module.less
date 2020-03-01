@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 19:41:30
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-27 13:07:15
+ * @Last Modified time: 2020-02-07 22:45:42
  */
 .table {
   &-top {
@@ -11,19 +11,32 @@
       display: flex;
       height: 32px;
       align-items: center;
-    }
-    &-info {
-      padding: 3px 0 3px 30px;
-      :global .ant-alert-icon {
-        top: 7px;
-        left: 10px;
+      &-info {
+        padding: 3px 0 3px 30px;
+        :global .ant-alert-icon {
+          top: 7px;
+          left: 10px;
+        }
       }
-      &-link {
-        padding: 0 10px;
+      &-action {
+        margin-left: 10px;
+      }
+      &-extra {
+        margin-right: 10px;
+      }
+      &-sort {
       }
     }
-    &-sort {
+  }
+  :global .ant-table {
+    .ant-table-footer {
+      border: 0;
+      padding: 0;
     }
+  }
+  .summation-table-wrap {
+    height: 48px;
+    overflow: hidden;
   }
 }
 .draggable-tree {

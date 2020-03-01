@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-11-23 14:08:56
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-29 14:11:14
+ * @Last Modified time: 2020-02-08 10:04:11
  */
 import React, { Component, createRef } from 'react';
 import classnames from 'classnames';
@@ -84,8 +84,18 @@ class Dashboard extends Component {
     values: { c: '2' },
     columns: [
       {
+        dataIndex: '$action',
+        title: '操作',
+        width: 100,
+        render: () => {
+          return '按钮';
+        }
+      },
+      {
         dataIndex: 'date',
         title: '日期',
+        width: 300,
+        ellipsis: true,
         filter: {
           type: 'date'
         }
@@ -93,6 +103,7 @@ class Dashboard extends Component {
       {
         dataIndex: ['person', 'name'],
         title: '姓名',
+        width: 300,
         sorter: true,
         filter: {
           type: 'text'
@@ -105,8 +116,12 @@ class Dashboard extends Component {
       {
         dataIndex: 'price',
         title: '价格',
+        width: 300,
         precision: 2,
         sorter: true,
+        summation: {
+          unit: '元'
+        },
         filter: {
           type: 'range-number'
         }
@@ -114,6 +129,7 @@ class Dashboard extends Component {
       {
         dataIndex: 'state',
         title: '状态',
+        width: 300,
         sorter: true,
         dictList: [
           { text: '已完成', value: 1 },
@@ -210,6 +226,19 @@ class Dashboard extends Component {
           onColumnsChange={columns => {
             this.setState({ columns });
           }}
+          moreActions={[
+            {
+              title: 'asdasd',
+              onClick: () => {
+                console.log(1234);
+              }
+            },
+            {
+              title: 'asdasd111'
+            }
+          ]}
+          extra={null}
+          scroll={{ y: 200 }}
         />
       </div>
     );

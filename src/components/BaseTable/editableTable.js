@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 00:08:09
+ * @Last Modified time: 2020-02-08 10:12:53
  */
 import React, { Component } from 'react';
 import memoizeOne from 'memoize-one';
@@ -28,24 +28,6 @@ export default WrappedComponent => {
     // 创建 EditableTable 组件 columns
     createEditableColumns = columns => {
       return columns;
-    };
-
-    // 列字段的深度查找
-    deepFindColumn = (columns, mark) => {
-      let res = null;
-      for (let i = 0; i < columns.length; i++) {
-        if (Array.isArray(columns[i].children)) {
-          res = this.deepFindColumn(columns[i].children, mark);
-        }
-        if (res) {
-          return res;
-        }
-        if (columns[i].dataIndex === mark) {
-          res = columns[i];
-          break;
-        }
-      }
-      return res;
     };
 
     render() {

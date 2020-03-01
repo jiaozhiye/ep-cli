@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-14 20:22:09
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-31 11:45:29
+ * @Last Modified time: 2020-02-08 13:38:09
  */
 import React, { Component } from 'react';
 import memoizeOne from 'memoize-one';
@@ -63,6 +63,8 @@ export default WrappedComponent => {
         }
         // 设置 column 的 key
         target.key = Array.isArray(dataIndex) ? dataIndex.join('.') : dataIndex;
+        // 设置 column 默认宽度
+        target.width = target.width ? target.width : 160;
         if (target.filter) {
           target = Object.assign({}, target, this.createFilterProps(target));
         }
@@ -298,12 +300,7 @@ export default WrappedComponent => {
 
     // 清空表头筛选条件
     clearFilters = () => {
-      const { serverFilter } = config.table;
       this.setState({ filteredInfo: {} });
-      // 在非服务端筛选时，处理分页总数
-      if (!serverFilter) {
-        this.context.onTotalChange(this.props.dataSource.length);
-      }
     };
 
     // 清空表头排序

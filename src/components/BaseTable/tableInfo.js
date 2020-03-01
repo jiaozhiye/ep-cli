@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2020-01-26 19:00:22
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2020-01-30 00:07:36
+ * @Last Modified time: 2020-02-06 19:27:57
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -38,11 +38,11 @@ export class TableInfo extends Component {
     const messageNode = (
       <>
         总共 {total} 条数据{_.isObject(selection) && `，已选择 ${selection.selectedRowKeys.length} 项`}
-        <a href="#" className={classnames(css[`table-top-info-link`])} onClick={this.clickHandle}>
+        <a href="#" style={{ paddingLeft: 10, paddingRight: 10 }} onClick={this.clickHandle}>
           清空
         </a>
       </>
     );
-    return <Alert className={classnames(css['table-top-info'])} message={messageNode} type="info" showIcon />;
+    return <Alert className={classnames(css['table-top-wrap-info'])} message={messageNode} type="info" showIcon />;
   }
 }
