@@ -13,7 +13,7 @@
     "lodash": "^4.17.11",
     "memoize-one": "^5.1.1",
     "mockjs": "^1.1.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "nprogress": "^0.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.4",
